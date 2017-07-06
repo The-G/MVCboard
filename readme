@@ -1,0 +1,19 @@
+프로젝트 설정
+
+1. encoding filter 설정
+	<filter>
+		<filter-name>character encoding</filter-name>
+		<filter-class>org.apache.catalina.filters.SetCharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>character encoding</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+2. WEB-INF/lib에 라이브러리 파일 복사
+
+3. Java Resources/src/log4j.properties 작성

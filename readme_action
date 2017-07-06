@@ -1,0 +1,14 @@
+# 새로운 액션 추가시
+1. 설정파일 dispactcher-servlet.properties에
+   새로운 액션 추가
+   EX>
+   요청할 액션명=패키지명.클래스명
+   /article/list=article.controllers.ArticleList
+   
+2. 새로운 액션 클래스 추가
+   - extends AbstractController
+   - override 메소드 추가
+   - 구현
+   - return ModelAndView 
+3. view 구현
+   - jsp 작성
