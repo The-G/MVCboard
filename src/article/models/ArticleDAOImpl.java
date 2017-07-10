@@ -80,21 +80,60 @@ public class ArticleDAOImpl implements ArticleDAO {
 			dbClose(ps,cn);
 		}
 	}
+	
 	@Override
 	public List<ArticleVO> getArticleList() throws Exception {
+		Connection cn =null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		List<ArticleVO> list = new ArrayList<ArticleVO>();
+		StringBuffer sql = new StringBuffer();
+		sql.append(" SELECT no, title, name, regdate, viewcount");
+		sql.append(" FROM   tb_article");
+		sql.append(" ORDER  BY no DESC");
+
+		try {
+			cn = getConnection();
+			ps = cn.prepareStatement(sql.toString());
+			rs = ps.executeQuery();
+			while(rs.next()) {
+				ArticleVO articleVO = new ArticleVO();
+				articleVO.setNo(rs.getLong("no"));
+				articleVO.setTitle(rs.getString("title"));
+				articleVO.setName(rs.getString("name"));
+				articleVO.setRegdate(rs.getDate("regdate"));
+				articleVO.setViewcount(rs.getInt("viewcount"));
+				list.add(articleVO);
+			}
+		} finally {
+			dbClose(rs, ps, cn);
+		}
+		return list;
+	}
+	
+	@Override
+	public List<ArticleVO> getArticleList(PageVO pageVO) throws Exception {
 		Connection cn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		
 		List<ArticleVO> list = new ArrayList<ArticleVO>();
 		StringBuffer sql = new StringBuffer();
-		sql.append(" select no, title, name, regdate, viewcount ");
-		sql.append(" from tb_article ");
-		sql.append(" order by no desc ");
 
+		sql.append(" select B.*");
+		sql.append(" from (select rownum AS rnum, A.*");
+		sql.append("       from (select no, title, name, regdate, viewcount");
+		sql.append("             from tb_article");
+		sql.append("             order by no desc) A) B");
+		sql.append(" where rnum between ? and ?");
+
+		
 		try {
 			cn = getConnection();
 			ps = cn.prepareStatement(sql.toString());
+			ps.setLong(1, pageVO.getStartnum());
+			ps.setLong(2, pageVO.getEndnum());
 			rs = ps.executeQuery();
 			while(rs.next()) {
 				ArticleVO articleVO = new ArticleVO();
@@ -147,4 +186,78 @@ public class ArticleDAOImpl implements ArticleDAO {
 		}
 		return articleVO;
 	}
+	@Override
+	public void updateViewcount(long no) throws Exception {
+		Connection cn = null;
+		PreparedStatement ps = null;
+		
+		StringBuffer sql = new StringBuffer();
+		sql.append(" update tb_article set");
+		sql.append(" 		viewcount = viewcount + 1");
+		sql.append(" where no = ?");
+		
+		try {
+			cn = getConnection();
+			// cn.getAutoCommit(false); // 참고:이걸로 auto commit 막을 수도 있다.
+			ps = cn.prepareStatement(sql.toString());
+			ps.setLong(1, no);
+			if(ps.executeUpdate() == 0) {
+				throw new RuntimeException(no + "번 게시물이 존재하지 않습니다.");
+			}
+		} finally {
+			
+		}
+		
+	}
+	@Override
+	public void updateArticle(ArticleVO articleVO) throws Exception {
+		Connection cn = null;
+		PreparedStatement ps = null;
+				
+		StringBuffer sql = new StringBuffer();
+		sql.append(" UPDATE tb_article ");
+		sql.append(" SET name = ?, ");
+		sql.append(" 	 title = ?, ");
+		sql.append(" 	 content = ? ");
+		sql.append(" WHERE no = ? and pwd = ? ");
+		
+		try {
+			cn = getConnection();
+			ps = cn.prepareStatement(sql.toString());
+			ps.setString(1, articleVO.getName());
+			ps.setString(2, articleVO.getTitle());
+			ps.setString(3, articleVO.getContent());
+			ps.setLong(4, articleVO.getNo());
+			ps.setString(5, articleVO.getPwd());
+
+			 if(ps.executeUpdate() == 0) {
+			 		throw new RuntimeException(articleVO.getNo() + "번 게시물 비밀번호가 틀렸습니다.");
+			 }
+		} finally {
+			dbClose(ps,cn);
+		}
+	}
+	@Override
+	public void deleteArticle(ArticleVO articleVO) throws Exception {
+		Connection cn = null;
+		PreparedStatement ps = null;
+				
+		StringBuffer sql = new StringBuffer();
+		sql.append(" DELETE from tb_article ");
+		sql.append(" WHERE no = ? and pwd = ? ");
+		
+		try {
+			cn = getConnection();
+			ps = cn.prepareStatement(sql.toString());
+			ps.setLong(1, articleVO.getNo());
+			ps.setString(2, articleVO.getPwd());
+
+			 if(ps.executeUpdate() == 0) {
+			 		throw new RuntimeException(articleVO.getNo() + "번 게시물 비밀번호가 틀렸습니다.");
+			 }
+		} finally {
+			dbClose(ps,cn);
+		}
+	}
+
 }

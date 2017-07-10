@@ -36,8 +36,8 @@
 </tr>
 </table><br/>
 <a href="list">리스트</a>
-<a href="update">수정</a>
-<a href="delete">삭제</a>
+<a href="update?no=${articleVO.no}">수정</a>
+<a href="delete?no=${articleVO.no}">삭제</a>
 </form>
 </body>
 </html>
