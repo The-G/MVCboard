@@ -25,4 +25,5 @@
 		<input type="submit" value="완료" />
 	</form>
 </body>
+<a href="list">리스트</a>
 </html>

@@ -259,5 +259,29 @@ public class ArticleDAOImpl implements ArticleDAO {
 			dbClose(ps,cn);
 		}
 	}
+	@Override
+	public long getTotalCount() throws Exception {
+		Connection cn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		String sql_total_count = " select count(no) as cnt from tb_article";
+		long result = 0;
+		try{
+			cn = getConnection();		
+			ps = cn.prepareStatement(sql_total_count);
+			rs = ps.executeQuery();
+			
+			if (rs.next()) {
+				result = rs.getLong("cnt");		
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			dbClose(rs,ps,cn);
+		}
+		return result;		
+	}
 
 }

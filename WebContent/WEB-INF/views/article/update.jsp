@@ -37,5 +37,6 @@
 </table>
 <input type="submit" value="완료" />
 </form>
+<a href="list">리스트</a>
 </body>
 </html>

@@ -13,7 +13,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class DispatcherServlet extends HttpServlet {
 	
@@ -21,9 +23,14 @@ public class DispatcherServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
 	// log4j 변수 설정
-	private static Logger logger = 
-			Logger.getLogger(DispatcherServlet.class);
+	/*private static Logger logger = 
+			Logger.getLogger(DispatcherServlet.class);*/
 
+	private static Logger logger =
+			LoggerFactory.getLogger(DispatcherServlet.class);
+	// log 를 통합해서 자원관리를 해준다!!
+	
+	
 	private static Map<String, AbstractController> controllerMap = 
 			new HashMap<String, AbstractController>();
 	

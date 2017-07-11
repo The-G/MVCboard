@@ -20,4 +20,7 @@ public interface ArticleDAO {
 
 	void deleteArticle(ArticleVO articleVO) throws Exception;
 
+	long getTotalCount() throws Exception;  // 예외처리를 하지 않고 DB연결만 하고자 한다. 
+											// 그래서 사용자 측에서 예외처리를 하도록!!!!!
+
 }
