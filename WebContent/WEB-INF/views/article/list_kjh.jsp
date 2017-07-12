@@ -74,10 +74,8 @@ table.type08 td {
 		</tbody>
 	</table>
 
-	<tr> 
-<td>${pageNation.display}
-
-<%-- <a href="list">First</a></td>
+	<tr>
+		<td><a href="list">First</a></td>
 		<td><c:choose>
 				<c:when test="${startPage == 1}">
 					       	Prev
@@ -85,8 +83,7 @@ table.type08 td {
 				<c:otherwise>
 					<a href="list?pg=${startPage-1}">Prev</a>
 				</c:otherwise>
-			</c:choose> 
-			<c:forEach var="page_num" begin="${startPage}" end="${endPage}">
+			</c:choose> <c:forEach var="page_num" begin="${startPage}" end="${endPage}">
 				<c:choose>
 					<c:when test="${pg == page_num}">
 						<strong>${page_num} </strong>
@@ -103,9 +100,8 @@ table.type08 td {
 					<a href="list?pg=${endPage+1}">Next</a>
 				</c:otherwise>
 			</c:choose></td>
-		<td><a href="list?pg=${pageCount}">Last</a> --%>
-	</td>
- </tr>
+		<td><a href="list?pg=${pageCount}">Last</a></td>
+	</tr>
 
 	<div style="margin-top: 20px">
 		<a href="insert">글쓰기</a><br />

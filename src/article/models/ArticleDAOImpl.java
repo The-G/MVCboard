@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import article.controllers.PageNation;
+
 public class ArticleDAOImpl implements ArticleDAO {
 	private static ArticleDAOImpl articleDAO = null;
 	
@@ -282,6 +284,43 @@ public class ArticleDAOImpl implements ArticleDAO {
 			dbClose(rs,ps,cn);
 		}
 		return result;		
+	}
+	@Override
+	public List<ArticleVO> getArticleList(PageNation pageNation) throws Exception {
+		Connection cn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		List<ArticleVO> list = new ArrayList<ArticleVO>();
+		StringBuffer sql = new StringBuffer();
+
+		sql.append(" select B.*");
+		sql.append(" from (select rownum AS rnum, A.*");
+		sql.append("       from (select no, title, name, regdate, viewcount");
+		sql.append("             from tb_article");
+		sql.append("             order by no desc) A) B");
+		sql.append(" where rnum between ? and ?");
+
+		try {
+			cn = getConnection();
+			ps = cn.prepareStatement(sql.toString());
+			ps.setLong(1, pageNation.getStartnum());
+			ps.setLong(2, pageNation.getEndnum());
+			rs = ps.executeQuery();
+			while(rs.next()) {
+				ArticleVO articleVO = new ArticleVO();
+				articleVO.setNo(rs.getLong("no"));
+				articleVO.setTitle(rs.getString("title"));
+				articleVO.setName(rs.getString("name"));
+				articleVO.setRegdate(rs.getDate("regdate"));
+				articleVO.setViewcount(rs.getInt("viewcount"));
+				list.add(articleVO);
+			}
+
+		} finally {
+			dbClose(rs, ps, cn);
+		}
+		return list;
 	}
 
 }

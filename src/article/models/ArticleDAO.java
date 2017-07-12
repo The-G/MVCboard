@@ -2,6 +2,7 @@ package article.models;
 
 import java.util.List;
 
+import article.controllers.PageNation;
 import article.models.ArticleVO;
 
 public interface ArticleDAO {
@@ -22,5 +23,7 @@ public interface ArticleDAO {
 
 	long getTotalCount() throws Exception;  // 예외처리를 하지 않고 DB연결만 하고자 한다. 
 											// 그래서 사용자 측에서 예외처리를 하도록!!!!!
+
+	List<ArticleVO> getArticleList(PageNation pageNation) throws Exception;
 
 }
