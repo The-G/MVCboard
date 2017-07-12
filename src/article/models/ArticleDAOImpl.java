@@ -1,7 +1,5 @@
 package article.models;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -9,7 +7,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
 
 import article.controllers.PageNation;
 
@@ -21,8 +22,10 @@ public class ArticleDAOImpl implements ArticleDAO {
 	private String username = null;
 	private String password = null;
 	
+	private DataSource ds = null;
+	
 	private ArticleDAOImpl() {
-		Properties pr = new Properties();
+		/*Properties pr = new Properties();
 		String props =
 			this.getClass().getResource("").getPath() + "/database.properties";
 		try {
@@ -36,10 +39,20 @@ public class ArticleDAOImpl implements ArticleDAO {
 			Class.forName(driver);
 		} catch (ClassNotFoundException | IOException e) {
 			e.printStackTrace();
+		}*/ // DBCP TEST 작업을 했기 때문에 이부분 없어도 된다. 아래 부분이 있기 때문에!!!
+		
+		try{
+				Context context = new InitialContext();
+	 			ds = (DataSource)context.lookup("java:/comp/env/jdbc/mydbcp");
+		} catch(Exception e){
+			e.printStackTrace();
 		}
+
+		
 	}
 	private Connection getConnection() throws SQLException {
-		return DriverManager.getConnection(url, username, password);
+//		return DriverManager.getConnection(url, username, password);
+		return ds.getConnection(); // DBCP 작업에서 이용!!
 	}
 	
 	public static ArticleDAOImpl getInstance() { // singleton

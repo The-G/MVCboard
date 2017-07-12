@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    <Resource auth="Container"
+  	driverClassName="oracle.jdbc.OracleDriver"
+  	maxTotal="10"
+  	maxWaitMillis="-1"
+  	name="jdbc/mydbcp"
+  	password="bigdata"
+  	username="bigdata"
+  	type="javax.sql.DataSource"
+  	url="jdbc:oracle:thin:@localhost:1521:xe"
+  	/>
+</Context>
