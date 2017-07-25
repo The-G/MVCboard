@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="article">
+
+	<typeAlias alias="ArticleVO" type="article.models.ArticleVO"/>
+	<typeAlias alias="PageNation" type="article.controllers.PageNation"/>
+
+	<!-- cache 24시간 유지!! -->
+	<cacheModel type="memory" id="listCache">
+		<flushInterval hours="24"/>
+		<flushOnExecute statement="article.insertArticle"/>
+		<flushOnExecute statement="article.updateArticle"/>
+		<flushOnExecute statement="article.deleteArticle"/>
+	</cacheModel>
+	<!-- Cache 'article.listCache': stored object 'ArticleVO [no=1010, name=ㄹㅇㄴㅁ, title=ㄹㄴㅁㄹ, content=null, pwd=null, regdate=Wed Jul 19 11:17:53 KST 2017, viewcount=9], ArticleVO [no=1008, name=ttat, title=난 알아요, content=null, pwd=null, regdate=Mon ...'  -->
+	<!-- 하게됨!!! -->
+	<!-- Cache 'article.listCache': retrieved object 'ArticleVO [no=1010, name=ㄹㅇㄴㅁ, title=ㄹㄴㅁㄹ, content=null, pwd=null, regdate=Wed Jul 19 11:17:53 KST 2017, viewcount=9], ArticleVO [no=1008, name=ttat, title=난 알아요, content=null, pwd=null, regdate=Mon ...' -->	
+	<!-- 이렇게 db가아닌 캐시에서 list를 가져오게 된다!!! 하지만, insert해도 db가 아닌 cache를 불러오니... 갱신이 안된다... 그래서 따로 옵션을 준다!! flushOnExecute 옵션 -->
+	<!-- 조회수 update는 중요한게 아니지..!! 그래서 except -->
+
+	<!-- db의 column이랑 java에 있는 변수명이 다를 때 -->
+	<resultMap class="ArticleVO" id="articleMap">
+		<result property="no" column="no" /> <!-- voclass setter name:property = db_column명:column -->
+		<result property="name" column="name" />
+		<result property="title" column="title" />
+		<result property="regdate" column="regdate" />
+		<result property="viewcount" column="viewcount" />
+	</resultMap>
+	<!--  -->
+	
+	<insert id="insertArticle" parameterClass="ArticleVO">
+		INSERT INTO tb_article(no, title, name, pwd, content)
+		VALUES(seq_article.nextval, #title#, #name#, #pwd#, #content#)
+	</insert>
+	
+	<select id="getDetail" parameterClass="long" resultClass="ArticleVO">
+		select no, title, name, regdate, viewcount, content
+		from tb_article
+		where no=#no#
+	</select>
+	
+	<update id="updateViewcount" parameterClass="long">
+		update tb_article 
+		set viewcount = viewcount + 1
+		where no =#no#
+	</update>
+	
+	<update id="updateArticle" parameterClass="ArticleVO">
+		UPDATE tb_article
+		SET name = #name#,
+		title = #title#,
+		content = #content#
+		WHERE no = #no# and pwd = #pwd# 
+	</update>
+
+	<delete id="deleteArticle" parameterClass="ArticleVO">
+		DELETE from tb_article
+		WHERE no = #no# and pwd = #pwd#
+	</delete>
+	
+	<select id="getTotalCount" resultClass="long">
+		 SELECT count(*) as cnt 
+		 FROM tb_article
+	</select>
+	
+	<select id="getArticleList" parameterClass="PageNation" resultMap="articleMap" cacheModel="listCache">
+		select B.*
+		from (select rownum AS rnum, A.*
+			  from (select no, title, name, regdate, viewcount
+	    	        from tb_article
+		order by no desc) A) B
+		where rnum between #startnum# and #endnum#
+	</select>
+	
+	
+</sqlMap>

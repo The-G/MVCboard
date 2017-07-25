@@ -10,16 +10,15 @@ public class PageNation {
 	private static Logger logger = 
 			LoggerFactory.getLogger(PageNation.class);
 	
-	long pg = 1;						// 현재 페이지!!
-	long pageCount = 0;			        // 전체 게시물 수
-	long totalCount = 0;				// 전체 페이지 수
-	long blockSize = 10;				// 한 페이지에 출력할 페이지 수
-	int pageSize = 10;		// 한 페이지에 출력할 게시물 수 
-	long startPage = 0;			// 페이지 블럭 시작 페이지
-	long endPage = 0;	// 페이지 블럭 끝 페이지
-
-	long startnum = 0;
-	long endnum = 0;
+	private long pg = 1;						// 현재 페이지!!
+	private long pageCount = 0;			        // 전체 게시물 수
+	private long totalCount = 0;				// 전체 페이지 수
+	private long blockSize = 10;				// 한 페이지에 출력할 페이지 수
+	private int pageSize = 10;		// 한 페이지에 출력할 게시물 수 
+	private long startPage = 0;			// 페이지 블럭 시작 페이지
+	private long endPage = 0;	// 페이지 블럭 끝 페이지
+	private long startnum = 0;
+	private long endnum = 0;
 	private StringBuffer display = new StringBuffer();
 	
 	public PageNation(long pg) throws Exception {
@@ -34,23 +33,27 @@ public class PageNation {
 		if (totalCount % pageSize != 0) { pageCount++; }
 		if (pageCount < endPage) { endPage = pageCount; }
 		
+		display.append("<ul class='pagination'>");
 		if (startPage == 1) {
-			display.append(" Prev ");
+			display.append(" <li><a href='#'>Prev</a></li> ");
 		} else {
-			display.append(" <a href='list?pg=" + (startPage - 1) + "'>Prev</a> ");
-		}		
+			display.append(" <li><a href='list?pg=" + (startPage - 1) + "'>Prev</a></li> ");
+		}
+		
 		for(long p = startPage; p <= endPage; p++) {
 			if (p == pg) {
-				display.append(" " + p + " ");
+				display.append(" <li class='active'><a href='#'>" + p + "</a></li>");
 			} else {
-				display.append(" <a href='list?pg="+p+"'> " + p + " </a> ");
+				display.append(" <li><a href='list?pg="+p+"'> " + p + " </a></li> ");
 			}
 		}
+		
 		if (endPage == pageCount) {
-			display.append(" Next ");
+			display.append(" <li><a href='#'>Next</a></li> ");
 		} else {
-			display.append(" <a href='list?pg=" + (endPage + 1) + "'>Next</a> ");
+			display.append(" <li><a href='list?pg=" + (endPage + 1) + "'>Next</a></li> ");
 		}
+		display.append("</ul>");
 	}
 
 	public long getPg() {

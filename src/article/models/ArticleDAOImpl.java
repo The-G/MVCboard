@@ -8,11 +8,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.management.Query;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
+import com.ibatis.sqlmap.client.SqlMapClient;
+
 import article.controllers.PageNation;
+import ibatis.QueryHandler;
 
 public class ArticleDAOImpl implements ArticleDAO {
 	private static ArticleDAOImpl articleDAO = null;
@@ -47,9 +51,8 @@ public class ArticleDAOImpl implements ArticleDAO {
 		} catch(Exception e){
 			e.printStackTrace();
 		}
-
-		
 	}
+	
 	private Connection getConnection() throws SQLException {
 //		return DriverManager.getConnection(url, username, password);
 		return ds.getConnection(); // DBCP 작업에서 이용!!
@@ -75,7 +78,14 @@ public class ArticleDAOImpl implements ArticleDAO {
 
 	@Override
 	public void insertArticle(ArticleVO articleVO) throws Exception {
-		Connection cn = null;
+		// use ibatis
+		SqlMapClient sqlMap = QueryHandler.getInstance();
+		sqlMap.insert("article.insertArticle", articleVO);
+		// 이걸로 끝 간결해 진다. 그래서 ibatis 쓴다!!
+		
+		//
+		
+		/*Connection cn = null;
 		PreparedStatement ps = null;
 		
 		StringBuffer sql = new StringBuffer();
@@ -93,7 +103,7 @@ public class ArticleDAOImpl implements ArticleDAO {
 			
 		} finally {
 			dbClose(ps,cn);
-		}
+		}*/
 	}
 	
 	@Override
@@ -168,7 +178,12 @@ public class ArticleDAOImpl implements ArticleDAO {
 	}
 	@Override
 	public ArticleVO getDetail(long no) throws Exception {
-		ArticleVO articleVO = null;
+//		ibatis 사용
+		SqlMapClient sqlMap = QueryHandler.getInstance();
+		return (ArticleVO) sqlMap.queryForObject("article.getDetail", no);
+		
+		
+		/*ArticleVO articleVO = null;
 		
 		Connection cn = null;
 		PreparedStatement ps = null;
@@ -199,11 +214,15 @@ public class ArticleDAOImpl implements ArticleDAO {
 		} finally {
 			dbClose(rs, ps, cn);
 		}
-		return articleVO;
+		return articleVO;*/	
 	}
 	@Override
 	public void updateViewcount(long no) throws Exception {
-		Connection cn = null;
+		// use ibatis
+		SqlMapClient sqlMap = QueryHandler.getInstance();
+		sqlMap.update("article.updateViewcount", no);
+		
+		/*Connection cn = null;
 		PreparedStatement ps = null;
 		
 		StringBuffer sql = new StringBuffer();
@@ -221,12 +240,17 @@ public class ArticleDAOImpl implements ArticleDAO {
 			}
 		} finally {
 			
-		}
+		}*/
 		
 	}
 	@Override
 	public void updateArticle(ArticleVO articleVO) throws Exception {
-		Connection cn = null;
+		// use ibatis		
+		SqlMapClient sqlMap = QueryHandler.getInstance();
+		if(sqlMap.update("article.updateArticle", articleVO) == 0) {
+	 		throw new RuntimeException(articleVO.getNo() + "번 게시물 비밀번호가 틀렸습니다.");
+		}
+		/*Connection cn = null;
 		PreparedStatement ps = null;
 				
 		StringBuffer sql = new StringBuffer();
@@ -250,11 +274,16 @@ public class ArticleDAOImpl implements ArticleDAO {
 			 }
 		} finally {
 			dbClose(ps,cn);
-		}
+		}*/
 	}
 	@Override
 	public void deleteArticle(ArticleVO articleVO) throws Exception {
-		Connection cn = null;
+		SqlMapClient sqlMap = QueryHandler.getInstance();
+		if(sqlMap.delete("article.deleteArticle", articleVO) == 0) {
+	 		throw new RuntimeException(articleVO.getNo() + "번 게시물 비밀번호가 틀렸습니다.");
+		}
+		
+		/*Connection cn = null;
 		PreparedStatement ps = null;
 				
 		StringBuffer sql = new StringBuffer();
@@ -272,11 +301,16 @@ public class ArticleDAOImpl implements ArticleDAO {
 			 }
 		} finally {
 			dbClose(ps,cn);
-		}
+		}*/
 	}
 	@Override
 	public long getTotalCount() throws Exception {
-		Connection cn = null;
+
+		SqlMapClient sqlMap = QueryHandler.getInstance();
+		return (long) sqlMap.queryForObject("article.getTotalCount"); // 한개를 얻어오는 것이기 때문에!!ㄴ
+		// object를 바로 기본 데이터 타입으로 바꾸는 것은 java7부터 가능하다!!
+		
+		/*Connection cn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		
@@ -296,11 +330,15 @@ public class ArticleDAOImpl implements ArticleDAO {
 		} finally {
 			dbClose(rs,ps,cn);
 		}
-		return result;		
+		return result;*/		
 	}
 	@Override
 	public List<ArticleVO> getArticleList(PageNation pageNation) throws Exception {
-		Connection cn = null;
+		
+		SqlMapClient sqlMap = QueryHandler.getInstance();
+		return sqlMap.queryForList("article.getArticleList", pageNation);
+		
+		/*Connection cn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		
@@ -333,7 +371,7 @@ public class ArticleDAOImpl implements ArticleDAO {
 		} finally {
 			dbClose(rs, ps, cn);
 		}
-		return list;
+		return list;*/
 	}
 
 }

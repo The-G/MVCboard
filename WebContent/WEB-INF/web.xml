@@ -29,5 +29,6 @@
     <servlet-name>dispatcher</servlet-name>
     <url-pattern>/article/*</url-pattern>
     <url-pattern>/watson/*</url-pattern>
+    <url-pattern>/member/*</url-pattern>
   </servlet-mapping>
 </web-app>
