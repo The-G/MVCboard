@@ -104,6 +104,10 @@ public class DispatcherServlet extends HttpServlet {
 //		dispatcher-servlet.properties를 사용함으로써 이부분이 필요 없어짐!!
 		
 		if (mav != null){
+			if (mav.getViewName().substring(0, 9).equals("redirect:")) {
+				response.sendRedirect(mav.getViewName().substring(9));
+				return;
+			}
 			for(String key : mav.getModel().keySet()) {
 				request.setAttribute(key, mav.getModel().get(key)); 
 			}

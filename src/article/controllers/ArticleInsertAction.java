@@ -32,20 +32,20 @@ public class ArticleInsertAction extends AbstractController {
 		
 		
 		ArticleDAO articleDAO = ArticleDAOImpl.getInstance();
-		ModelAndView mav = new ModelAndView("/WEB-INF/views/result.jsp");
 		try {
+			ModelAndView mav = new ModelAndView("redirect:list");
 			articleDAO.insertArticle(articleVO);
 //			logger.info("글 등록성공");
-			mav.addObject("msg", "글 등록 성공");
-			mav.addObject("url", "list");
+			return mav;
 		} catch (Exception e) {
+			ModelAndView mav = new ModelAndView("/WEB-INF/views/result.jsp");
 			e.printStackTrace();
 //			logger.info("글 등록실패");
 			mav.addObject("msg", "글 등록 실패");
 			mav.addObject("url", "javascript:history.back();");
+			return mav;
 		}
 		
-		return mav;
 	}
 
 }
